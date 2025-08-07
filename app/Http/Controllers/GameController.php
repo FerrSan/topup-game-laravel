@@ -22,6 +22,18 @@ class GameController extends Controller
         return view('games.index', compact('games'));
     }
 
+    public function search(Request $request)
+{
+    $query = $request->input('query');
+    
+    $games = Game::where('name', 'like', '%' . $query . '%')
+                 ->active()
+                 ->orderBy('name')
+                 ->paginate(12);
+
+    return view('games.search', compact('games'));
+}
+
     public function show($slug)
     {
         $game = Game::where('slug', $slug)

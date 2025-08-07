@@ -49,4 +49,33 @@ class HomeController extends Controller
 
         return view('games.search', compact('games', 'query'));
     }
+
+     public function trackForm()
+    {
+        return view('transactions.track-form');
+    }
+
+    /**
+     * Track an order by invoice number.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function trackOrder(Request $request)
+    {
+        $invoiceNumber = $request->input('invoice_number');
+
+        // Cari transaksi berdasarkan nomor invoice
+        $transaction = Transaction::with(['game', 'product', 'paymentMethod'])
+                                ->where('invoice_number', $invoiceNumber)
+                                ->first();
+
+        if (!$transaction) {
+            // Redirect kembali ke form dengan pesan error jika tidak ditemukan
+            return redirect()->route('track.form')->with('error', 'Nomor invoice tidak ditemukan.');
+        }
+
+        // Jika transaksi ditemukan, tampilkan detail transaksi
+        return view('transactions.show', compact('transaction'));
+    }
 }

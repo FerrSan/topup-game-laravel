@@ -1,4 +1,3 @@
-<!-- resources/views/home.blade.php -->
 @extends('layouts.app')
 
 @section('title', 'Top Up Game Termurah & Terpercaya')
@@ -7,15 +6,20 @@
     <!-- Hero Section with Banner Carousel -->
     <section class="relative">
         <div class="relative h-96 overflow-hidden bg-gradient-to-r from-purple-600 to-indigo-600">
-            @if($banners->count() > 0)
+            @if(isset($banners) && $banners->count() > 0)
                 <div class="swiper-container h-full">
                     <div class="swiper-wrapper">
                         @foreach($banners as $banner)
                             <div class="swiper-slide">
-                                <a href="{{ $banner->link }}" class="block h-full">
-                                    <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}" 
+                                @if(!empty($banner->link))
+                                    <a href="{{ $banner->link }}" class="block h-full" target="_blank" rel="noopener">
+                                        <img src="{{ $banner->image_url }}" alt="{{ $banner->title ?? 'Banner' }}" 
+                                             class="w-full h-full object-cover">
+                                    </a>
+                                @else
+                                    <img src="{{ $banner->image_url }}" alt="{{ $banner->title ?? 'Banner' }}" 
                                          class="w-full h-full object-cover">
-                                </a>
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -25,8 +29,8 @@
                 <!-- Default Hero Content -->
                 <div class="absolute inset-0 flex items-center justify-center">
                     <div class="text-center text-white px-4">
-                        <h1 class="text-5xl font-bold mb-4">Top Up Game Favoritmu</h1>
-                        <p class="text-xl mb-8">Proses Cepat, Aman, dan Terpercaya</p>
+                        <h1 class="text-3xl md:text-5xl font-bold mb-4">Top Up Game Favoritmu</h1>
+                        <p class="text-lg md:text-xl mb-8">Proses Cepat, Aman, dan Terpercaya</p>
                         <a href="#games" class="inline-flex items-center px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg hover:bg-gray-100 transition">
                             Mulai Top Up
                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,16 +48,18 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <form action="{{ route('search') }}" method="GET" class="flex justify-center">
                 <div class="relative w-full max-w-2xl">
-                    <input type="text" name="q" 
+                    <input type="text" 
+                           name="q" 
                            placeholder="Cari game favoritmu..." 
-                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg focus:outline-none focus:border-indigo-500 transition"
-                           value="{{ request('q') }}">
+                           class="w-full pl-12 pr-16 py-4 border-2 border-gray-200 rounded-xl text-lg focus:outline-none focus:border-indigo-500 transition"
+                           value="{{ request('q') }}"
+                           autocomplete="off">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <button type="submit" class="absolute inset-y-0 right-0 px-6 bg-indigo-600 text-white rounded-r-xl hover:bg-indigo-700 transition">
+                    <button type="submit" class="absolute inset-y-0 right-0 px-6 bg-indigo-600 text-white rounded-r-xl hover:bg-indigo-700 transition focus:outline-none">
                         Cari
                     </button>
                 </div>
@@ -62,7 +68,7 @@
     </section>
 
     <!-- Popular Games -->
-    @if($popularGames->count() > 0)
+    @if(isset($popularGames) && $popularGames->count() > 0)
     <section class="py-12 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-8">
@@ -72,27 +78,30 @@
                 </a>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
                 @foreach($popularGames as $game)
                     <a href="{{ route('games.show', $game->slug) }}" 
                        class="group relative bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                        <div class="aspect-w-1 aspect-h-1">
+                        <div class="aspect-square">
                             <img src="{{ $game->image_url }}" alt="{{ $game->name }}" 
-                                 class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                 loading="lazy">
                         </div>
                         <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
                             HOT
                         </div>
                         <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 mb-1">{{ $game->name }}</h3>
-                            <p class="text-sm text-gray-500">{{ $game->publisher }}</p>
-                            <div class="mt-2 flex items-center text-xs text-gray-400">
-                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2V5z" clip-rule="evenodd"/>
-                                </svg>
-                                {{ $game->transactions_count }} transaksi
-                            </div>
+                            <h3 class="font-semibold text-gray-900 mb-1 truncate">{{ $game->name }}</h3>
+                            <p class="text-sm text-gray-500 truncate">{{ $game->publisher }}</p>
+                            @if(isset($game->transactions_count))
+                                <div class="mt-2 flex items-center text-xs text-gray-400">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 000 2H6a2 2 0 100 4h2a2 2 0 100-4h-.5a1 1 0 000-2H8a2 2 0 012-2V5z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ number_format($game->transactions_count) }} transaksi
+                                </div>
+                            @endif
                         </div>
                     </a>
                 @endforeach
@@ -112,47 +121,58 @@
             <!-- Category Tabs -->
             <div class="flex justify-center mb-8">
                 <div class="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
-                    <button data-category="all" class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm active">
+                    <button type="button" 
+                            data-category="all" 
+                            class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm active">
                         Semua
                     </button>
-                    <button data-category="mobile" class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
+                    <button type="button" 
+                            data-category="mobile" 
+                            class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
                         Mobile
                     </button>
-                    <button data-category="pc" class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
+                    <button type="button" 
+                            data-category="pc" 
+                            class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
                         PC
                     </button>
-                    <button data-category="console" class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
+                    <button type="button" 
+                            data-category="console" 
+                            class="category-tab px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none focus:bg-white focus:shadow-sm">
                         Console
                     </button>
                 </div>
             </div>
             
             <!-- Games Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 @foreach($games as $game)
                     <div class="game-card" data-category="{{ $game->category }}">
                         <a href="{{ route('games.show', $game->slug) }}" 
                            class="group block bg-white rounded-lg shadow hover:shadow-lg transition-all duration-300">
                             <div class="relative overflow-hidden rounded-t-lg">
-                                <img src="{{ $game->image_url }}" alt="{{ $game->name }}" 
-                                     class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-300">
-                                @if($game->products->where('is_promo', true)->count() > 0)
+                                <div class="aspect-square">
+                                    <img src="{{ $game->image_url }}" alt="{{ $game->name }}" 
+                                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                         loading="lazy">
+                                </div>
+                                @if(isset($game->products) && $game->products->where('is_promo', true)->count() > 0)
                                     <div class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
                                         PROMO
                                     </div>
                                 @endif
                             </div>
                             <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition">
+                                <h3 class="font-semibold text-gray-900 group-hover:text-indigo-600 transition truncate">
                                     {{ $game->name }}
                                 </h3>
-                                <p class="text-sm text-gray-500 mt-1">{{ $game->publisher }}</p>
+                                <p class="text-sm text-gray-500 mt-1 truncate">{{ $game->publisher }}</p>
                                 <div class="mt-3 flex items-center justify-between">
-                                    <span class="text-xs text-gray-400">
+                                    <span class="text-xs text-gray-400 flex items-center">
                                         <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-1"></span>
                                         Instant Process
                                     </span>
-                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-indigo-600 transition flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </div>
@@ -164,7 +184,7 @@
             
             <div class="text-center mt-10">
                 <a href="{{ route('games.index') }}" 
-                   class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">
+                   class="inline-flex items-center px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition focus:outline-none">
                     Lihat Semua Game
                     <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -214,17 +234,18 @@
     </section>
 
     <!-- Testimonials Section -->
-    @if($testimonials->count() > 0)
+    @if(isset($testimonials) && $testimonials->count() > 0)
     <section class="py-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-bold text-gray-900 text-center mb-12">Apa Kata Mereka?</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($testimonials as $testimonial)
                     <div class="bg-white rounded-lg shadow-md p-6">
                         <div class="flex items-center mb-4">
-                            <img src="{{ $testimonial->avatar_url }}" alt="{{ $testimonial->name }}" 
-                                 class="w-12 h-12 rounded-full mr-4">
+                            <img src="{{ $testimonial->avatar_url ?? asset('images/default-avatar.png') }}" 
+                                 alt="{{ $testimonial->name }}" 
+                                 class="w-12 h-12 rounded-full mr-4 object-cover">
                             <div>
                                 <h4 class="font-semibold text-gray-900">{{ $testimonial->name }}</h4>
                                 <p class="text-sm text-gray-500">{{ $testimonial->game }}</p>
@@ -252,11 +273,11 @@
             <p class="text-xl text-gray-600 mb-8">Bergabung dengan ribuan gamer yang sudah mempercayai kami</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('games.index') }}" 
-                   class="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition">
+                   class="inline-flex items-center justify-center px-8 py-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition focus:outline-none">
                     Mulai Top Up Sekarang
                 </a>
                 <a href="{{ route('track.form') }}" 
-                   class="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg border-2 border-indigo-600 hover:bg-indigo-50 transition">
+                   class="inline-flex items-center justify-center px-8 py-4 bg-white text-indigo-600 font-semibold rounded-lg border-2 border-indigo-600 hover:bg-indigo-50 transition focus:outline-none">
                     Lacak Pesanan
                 </a>
             </div>
@@ -271,33 +292,114 @@
         color: #4f46e5;
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
     }
+    
+    .aspect-square {
+        aspect-ratio: 1 / 1;
+    }
+    
+    .game-card {
+        transition: opacity 0.3s ease;
+    }
+    
+    .game-card.hidden {
+        display: none !important;
+    }
+    
+    /* Swiper Styles */
+    .swiper-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .swiper-slide {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .swiper-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .swiper-pagination-bullet {
+        background: white;
+        opacity: 0.7;
+        width: 12px;
+        height: 12px;
+    }
+    
+    .swiper-pagination-bullet-active {
+        opacity: 1;
+        background: white;
+    }
+    
+    /* Pastikan tidak ada overflow text */
+    .hero-section {
+        position: relative;
+        z-index: 0;
+    }
+    
+    .hero-section * {
+        position: relative;
+        z-index: 1;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Swiper only if container exists and Swiper is available
+    const swiperContainer = document.querySelector('.swiper-container');
+    if (swiperContainer && typeof Swiper !== 'undefined') {
+        try {
+            new Swiper('.swiper-container', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                effect: 'slide',
+                speed: 800,
+                // Disable navigation buttons for cleaner look
+                allowTouchMove: true,
+            });
+        } catch (error) {
+            console.log('Swiper initialization failed:', error);
+        }
+    }
+
     // Category Filter
-    document.addEventListener('DOMContentLoaded', function() {
-        const tabs = document.querySelectorAll('.category-tab');
-        const cards = document.querySelectorAll('.game-card');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                // Update active tab
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Filter games
-                const category = this.dataset.category;
-                cards.forEach(card => {
-                    if (category === 'all' || card.dataset.category === category) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+    const tabs = document.querySelectorAll('.category-tab');
+    const cards = document.querySelectorAll('.game-card');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter games
+            const category = this.dataset.category;
+            cards.forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.classList.remove('hidden');
+                    card.style.display = 'block';
+                } else {
+                    card.classList.add('hidden');
+                    card.style.display = 'none';
+                }
             });
         });
     });
+});
 </script>
 @endpush

@@ -52,7 +52,7 @@ Route::post('/payment/webhook', [PaymentController::class, 'webhook'])->name('pa
 Route::get('/track', function() {
     return view('transactions.track-form');
 })->name('track.form');
-Route::post('/track', [TransactionController::class, 'track'])->name('track.submit');
+Route::post('/track', [TransactionController::class, 'track'])->name('transactions.track');
 
 // Static Pages
 Route::view('/about', 'pages.about')->name('about');
@@ -102,6 +102,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('products', AdminProductController::class);
     
     // Transactions Management
+    
     Route::get('transactions', [AdminTransactionController::class, 'index'])->name('transactions.index');
     Route::get('transactions/{transaction}', [AdminTransactionController::class, 'show'])->name('transactions.show');
     Route::patch('transactions/{transaction}/status', [AdminTransactionController::class, 'updateStatus'])
